@@ -91,6 +91,33 @@ def perform_eda(data_path, output_dir):
     plt.savefig(os.path.join(output_dir, 'field_vs_interest.png'))
     plt.close()
 
+    # --- Advanced Visualizations ---
+    print("\nGenerating advanced visualizations...")
+
+    # Violin plot for Starting Salary by Field of Study
+    plt.figure(figsize=(14, 9))
+    sns.violinplot(x='Starting_Salary', y='Field_of_Study', data=df, inner='quartile', palette='muted')
+    plt.title('Distribution of Starting Salary by Field of Study')
+    plt.tight_layout()
+    plt.savefig(os.path.join(output_dir, 'salary_distribution_violin.png'))
+    plt.close()
+
+    # Pair plot for a subset of numerical features
+    print("\nGenerating pair plot (this might take a moment)...")
+    pair_plot_cols = ['University_GPA', 'Starting_Salary', 'Career_Satisfaction', 'Field_of_Study']
+    pair_plot = sns.pairplot(df[pair_plot_cols], hue='Field_of_Study', palette='viridis', diag_kind='kde')
+    pair_plot.fig.suptitle('Pairwise Relationships of Key Features', y=1.02)
+    pair_plot.savefig(os.path.join(output_dir, 'key_features_pairplot.png'))
+    plt.close()
+
+    # FacetGrid for GPA vs Salary across different Fields of Study
+    g = sns.FacetGrid(df, col="Field_of_Study", col_wrap=3, height=4, hue='Gender')
+    g.map(sns.scatterplot, "University_GPA", "Starting_Salary", alpha=0.7)
+    g.add_legend()
+    g.fig.suptitle('GPA vs. Salary across Fields of Study and Gender', y=1.02)
+    g.savefig(os.path.join(output_dir, 'gpa_vs_salary_faceted.png'))
+    plt.close()
+
 
     print(f"\nEDA complete. Plots saved in '{output_dir}' directory.")
 
@@ -98,6 +125,6 @@ if __name__ == "__main__":
     # The path to the cleaned data file
     cleaned_data_path = os.path.join(os.path.dirname(__file__), 'datasets', 'cleaned_education_data.csv')
     # Directory to save the plots
-    plots_output_dir = os.path.join(os.path.dirname(__file__), 'eda_plots')
+    plots_output_dir = os.path.join(os.path.dirname(__file__), 'advanced_eda_plots')
     
     perform_eda(cleaned_data_path, plots_output_dir)
