@@ -3,14 +3,10 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import os
 
-def perform_eda(data_path, output_dir):
+def perform_eda(data_path):
     """
-    Performs Exploratory Data Analysis on the cleaned dataset.
+    Performs Exploratory Data Analysis on the cleaned dataset and displays plots.
     """
-    # Create output directory if it doesn't exist
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-
     # Load the dataset
     df = pd.read_csv(data_path)
 
@@ -33,8 +29,7 @@ def perform_eda(data_path, output_dir):
         plt.figure(figsize=(10, 6))
         sns.histplot(df[col], kde=True)
         plt.title(f'Distribution of {col}')
-        plt.savefig(os.path.join(output_dir, f'{col}_distribution.png'))
-        plt.close()
+        plt.show()
 
     # Count plots for categorical features
     categorical_cols = ['Gender', 'Field_of_Study', 'Current_Job_Level', 'Entrepreneurship', 'Interest_Aligned']
@@ -43,8 +38,7 @@ def perform_eda(data_path, output_dir):
         sns.countplot(y=df[col], order=df[col].value_counts().index)
         plt.title(f'Count of {col}')
         plt.tight_layout()
-        plt.savefig(os.path.join(output_dir, f'{col}_countplot.png'))
-        plt.close()
+        plt.show()
 
     # --- Bivariate and Multivariate Analysis ---
     print("\nGenerating relationship plots...")
@@ -56,31 +50,27 @@ def perform_eda(data_path, output_dir):
     sns.heatmap(numeric_df.corr(), annot=True, fmt='.2f', cmap='coolwarm')
     plt.title('Correlation Matrix of Numerical Features')
     plt.tight_layout()
-    plt.savefig(os.path.join(output_dir, 'correlation_heatmap.png'))
-    plt.close()
+    plt.show()
 
     # Field of Study vs. Starting Salary
     plt.figure(figsize=(12, 8))
     sns.boxplot(x='Starting_Salary', y='Field_of_Study', data=df)
     plt.title('Starting Salary by Field of Study')
     plt.tight_layout()
-    plt.savefig(os.path.join(output_dir, 'salary_by_field.png'))
-    plt.close()
+    plt.show()
 
     # University GPA vs. Starting Salary
     plt.figure(figsize=(10, 6))
     sns.scatterplot(x='University_GPA', y='Starting_Salary', data=df, hue='Field_of_Study', alpha=0.7)
     plt.title('University GPA vs. Starting Salary')
     plt.tight_layout()
-    plt.savefig(os.path.join(output_dir, 'gpa_vs_salary.png'))
-    plt.close()
+    plt.show()
 
     # Interest Aligned vs. Career Satisfaction
     plt.figure(figsize=(8, 6))
     sns.boxplot(x='Interest_Aligned', y='Career_Satisfaction', data=df)
     plt.title('Career Satisfaction by Interest Alignment')
-    plt.savefig(os.path.join(output_dir, 'satisfaction_by_interest_alignment.png'))
-    plt.close()
+    plt.show()
     
     # Relationship between Field of Study and Interest
     plt.figure(figsize=(15, 20))
@@ -88,8 +78,7 @@ def perform_eda(data_path, output_dir):
     plt.title('Interests within Each Field of Study')
     plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
     plt.tight_layout()
-    plt.savefig(os.path.join(output_dir, 'field_vs_interest.png'))
-    plt.close()
+    plt.show()
 
     # --- Advanced Visualizations ---
     print("\nGenerating advanced visualizations...")
@@ -99,32 +88,27 @@ def perform_eda(data_path, output_dir):
     sns.violinplot(x='Starting_Salary', y='Field_of_Study', data=df, inner='quartile', palette='muted')
     plt.title('Distribution of Starting Salary by Field of Study')
     plt.tight_layout()
-    plt.savefig(os.path.join(output_dir, 'salary_distribution_violin.png'))
-    plt.close()
+    plt.show()
 
     # Pair plot for a subset of numerical features
-    print("\nGenerating pair plot (this might take a moment)...")
+    print("\nGenerating pair plot")
     pair_plot_cols = ['University_GPA', 'Starting_Salary', 'Career_Satisfaction', 'Field_of_Study']
     pair_plot = sns.pairplot(df[pair_plot_cols], hue='Field_of_Study', palette='viridis', diag_kind='kde')
     pair_plot.fig.suptitle('Pairwise Relationships of Key Features', y=1.02)
-    pair_plot.savefig(os.path.join(output_dir, 'key_features_pairplot.png'))
-    plt.close()
+    plt.show()
 
     # FacetGrid for GPA vs Salary across different Fields of Study
     g = sns.FacetGrid(df, col="Field_of_Study", col_wrap=3, height=4, hue='Gender')
     g.map(sns.scatterplot, "University_GPA", "Starting_Salary", alpha=0.7)
     g.add_legend()
     g.fig.suptitle('GPA vs. Salary across Fields of Study and Gender', y=1.02)
-    g.savefig(os.path.join(output_dir, 'gpa_vs_salary_faceted.png'))
-    plt.close()
+    plt.show()
 
 
-    print(f"\nEDA complete. Plots saved in '{output_dir}' directory.")
+    print(f"\nEDA complete. Plots were displayed.")
 
 if __name__ == "__main__":
     # The path to the cleaned data file
-    cleaned_data_path = os.path.join(os.path.dirname(__file__), 'datasets', 'cleaned_education_data.csv')
-    # Directory to save the plots
-    plots_output_dir = os.path.join(os.path.dirname(__file__), 'advanced_eda_plots')
+    cleaned_data_path = os.path.join(os.path.dirname(__file__), '..', 'datasets', 'cleaned_education_data.csv')
     
-    perform_eda(cleaned_data_path, plots_output_dir)
+    perform_eda(cleaned_data_path)
