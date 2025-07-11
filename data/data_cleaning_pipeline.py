@@ -12,17 +12,13 @@ def clean_education_dataset(input_path, output_path):
     print("\nMissing Values Before Cleaning:")
     print(df.isnull().sum())
     
-    # 1. Data Cleaning: Handling Missing Values (Blanks)
-    # Fill missing numerical columns with the median
     num_cols = ['High_School_GPA', 'SAT_Score', 'University_GPA']
     df[num_cols] = df[num_cols].fillna(df[num_cols].median())
     
-    # Fill missing categorical columns with the mode
     cat_cols = ['Field_of_Study', 'Gender', 'Current_Job_Level']
     for col in cat_cols:
         df[col] = df[col].fillna(df[col].mode()[0])
     
-    # Correcting data types for memory optimization and consistency
     type_corrections = {
         'Age': 'int8',
         'SAT_Score': 'int16',
@@ -31,25 +27,19 @@ def clean_education_dataset(input_path, output_path):
     }
     df = df.astype(type_corrections)
     
-    # 2. Data Cleaning: Removing Duplicates
     print(f"\nDuplicates Found: {df.duplicated().sum()}")
     df = df.drop_duplicates()
     
-    # Standardizing Gender values
     gender_map = {'male':'Male', 'female':'Female', 'other':'Other', 'non-binary':'Other'}
     df['Gender'] = df['Gender'].str.lower().map(gender_map).fillna('Other')
     
-    # Standardizing Field_of_Study to title case
     df['Field_of_Study'] = df['Field_of_Study'].str.title()
     
-    # Clipping SAT scores to a valid range (400-1600)
     df['SAT_Score'] = df['SAT_Score'].clip(400, 1600)
     
-    # Clipping GPA scores to a valid range (0-4.0)
     gpa_cols = ['High_School_GPA', 'University_GPA']
     df[gpa_cols] = df[gpa_cols].clip(0, 4.0)
     
-    # Feature Engineering: Creating 'Interest_Aligned' column
     field_to_interests = {
         'Computer Science': ['AI', 'Cybersecurity', 'Data Science', 'Software Development', 'Machine Learning'],
     }
