@@ -99,3 +99,22 @@ Potential enhancements to consider:
 - Incorporating more features related to soft skills and extracurricular activities
 - Implementing a more robust uncertainty quantification method
 - Adding time-series analysis to track salary trends over time
+
+
+
+
+PA + Field of Study to predict salary?
+
+And use other features (e.g., Interest, Projects, Internships, Certs) for career?
+
+
+
+RandomForestRegressor for salary prediction
+
+RandomForestClassifier and KNN for career prediction
+
+Accuracy evaluations
+
+Cross-validation support
+
+Clean structure   
