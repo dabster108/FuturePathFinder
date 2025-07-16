@@ -136,4 +136,12 @@ sns.pairplot(df[subset_features], hue=target, diag_kind='kde')
 plt.savefig(f"{SAVE_DIR}10_pairplot_selected_features.png")
 plt.close()
 
-print(f"✅ 10 EDA plots saved in {SAVE_DIR}")
+# 11. KDE Plot: University GPA by Career
+plt.figure(figsize=(12,6))
+sns.kdeplot(data=df, x='University_GPA', hue=target, fill=True, common_norm=False, alpha=0.5)
+plt.title("University GPA Distribution by Career")
+plt.tight_layout()
+plt.savefig(f"{SAVE_DIR}11_kdeplot_University_GPA_by_Career.png")
+plt.close()
+
+print(f"✅ 11 EDA plots saved in {SAVE_DIR}")
