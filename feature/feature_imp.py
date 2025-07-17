@@ -6,11 +6,11 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder
 
 # === 0. Output Directory for Plots ===
-output_dir = "/Users/dikshanta/Documents/FuturePathFinder/feature"
+output_dir = "/Users/dikshanta/Documents/FuturePathFinder/feature/feature_visualizations/"
 os.makedirs(output_dir, exist_ok=True)
 
 # === 1. Load Dataset ===
-df = pd.read_csv("/Users/dikshanta/Documents/FuturePathFinder/data/assigned_careers_dataset.csv")
+df = pd.read_csv("/Users/dikshanta/Documents/FuturePathFinder/data/datasets/cleaned_data.csv")
 
 # === 2. Drop unnecessary ID column if present ===
 if 'Student_ID' in df.columns:

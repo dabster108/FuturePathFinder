@@ -11,7 +11,7 @@ from sklearn.metrics import (
     auc, precision_recall_curve, average_precision_score
 )
 
-df = pd.read_csv("/Users/dikshanta/Documents/FuturePathFinder/data/assigned_careers_dataset.csv")
+df = pd.read_csv("/Users/dikshanta/Documents/FuturePathFinder/data/datasets/cleaned_data.csv")
 df['Field_of_Study'] = df['Field_of_Study'].astype(str).str.strip()
 le_field = LabelEncoder()
 df['Field_of_Study_enc'] = le_field.fit_transform(df['Field_of_Study'])

@@ -7,7 +7,7 @@ from sklearn.preprocessing import LabelEncoder
 
 sns.set(style="whitegrid")
 
-DATA_PATH = "/Users/dikshanta/Documents/FuturePathFinder/data/assigned_careers_dataset.csv"
+DATA_PATH = "/Users/dikshanta/Documents/FuturePathFinder/data/datasets/cleaned_data.csv"
 SAVE_DIR = "/Users/dikshanta/Documents/FuturePathFinder/eda_visualizations/"
 
 os.makedirs(SAVE_DIR, exist_ok=True)
