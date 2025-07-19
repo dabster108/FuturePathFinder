@@ -1,0 +1,303 @@
+/* --- Layout & Typography --- */
+body {
+  margin: 0;
+  font-family: 'Nunito', 'Poppins', 'Segoe UI', Arial, sans-serif;
+  background: #f7f9fb;
+  color: #222;
+  min-height: 100vh;
+}
+.hero {
+  width: 100vw;
+  background: linear-gradient(100deg, #2a4d69 0%, #3b7dd8 100%);
+  color: #fff;
+  padding: 3.5rem 0 2.5rem 0;
+  text-align: center;
+  border-radius: 0 0 32px 32px;
+  box-shadow: 0 4px 24px rgba(42,77,105,0.08);
+  position: relative;
+  overflow: hidden;
+}
+.hero-title {
+  font-family: 'Poppins', 'Nunito', sans-serif;
+  font-size: 2.8rem;
+  font-weight: 700;
+  margin-bottom: 0.7rem;
+  letter-spacing: 0.5px;
+}
+.hero-subtitle {
+  font-size: 1.18rem;
+  font-weight: 400;
+  max-width: 600px;
+  margin: 0 auto;
+  color: #f2f6fa;
+  line-height: 1.6;
+}
+
+/* --- Glassmorphism Form --- */
+.glass-card {
+  background: rgba(255,255,255,0.85);
+  box-shadow: 0 8px 32px rgba(42,77,105,0.10);
+  border-radius: 18px;
+  padding: 2.2rem 2.5rem 2.5rem 2.5rem;
+  margin-top: -3.5rem;
+  margin-bottom: 2.5rem;
+  max-width: 540px;
+  margin-left: auto;
+  margin-right: auto;
+  backdrop-filter: blur(4px);
+}
+.form-section form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+.form-group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.5rem;
+}
+label {
+  font-weight: 600;
+  color: #2a4d69;
+  margin-bottom: 0.2rem;
+  font-size: 1rem;
+  transition: color 0.2s;
+}
+input, select {
+  padding: 0.6rem 0.8rem;
+  border: 1.5px solid #bfc9d1;
+  border-radius: 7px;
+  font-size: 1rem;
+  font-family: inherit;
+  background: #f2f6fa;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+input:focus, select:focus {
+  border-color: #2a4d69;
+  outline: none;
+  box-shadow: 0 0 0 2px #3b7dd833;
+}
+
+/* --- Animated Button --- */
+.btn {
+  background: #2a4d69;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.85rem 1.3rem;
+  font-size: 1.08rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 0.7rem;
+  box-shadow: 0 2px 8px rgba(42,77,105,0.08);
+  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+  will-change: transform;
+}
+.btn:hover, .btn:focus {
+  background: #1e3550;
+  box-shadow: 0 4px 16px rgba(42,77,105,0.13);
+  transform: scale(1.05) translateY(-2px);
+  animation: bounce 0.3s;
+}
+@keyframes bounce {
+  0% { transform: scale(1) translateY(0); }
+  50% { transform: scale(1.08) translateY(-4px); }
+  100% { transform: scale(1.05) translateY(-2px); }
+}
+.btn-secondary {
+  background: #e7ecf3;
+  color: #2a4d69;
+  border: none;
+  border-radius: 7px;
+  padding: 0.6rem 1.1rem;
+  font-size: 0.98rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+.btn-secondary:hover, .btn-secondary:focus {
+  background: #d0d8e2;
+  transform: scale(1.07);
+  box-shadow: 0 2px 8px #3b7dd822;
+}
+
+/* --- Results Section --- */
+.results-section {
+  max-width: 100vw;
+  margin: 0 auto 2.5rem auto;
+  padding: 0 0.5rem;
+}
+.results-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.1rem;
+  gap: 1rem;
+}
+.results-title {
+  font-size: 1.25rem;
+  color: #2a4d69;
+  font-weight: 700;
+  margin: 0;
+}
+.results-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+.recommendations-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 0.5rem;
+}
+.recommendations-list {
+  display: flex;
+  flex-direction: row;
+  gap: 1.2rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  min-height: 180px;
+}
+.recommendation-item {
+  min-width: 270px;
+  max-width: 320px;
+  background: #f2f6fa;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(42,77,105,0.10);
+  padding: 1.3rem 1.3rem 1.1rem 1.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  position: relative;
+  transition: transform 0.25s, box-shadow 0.25s;
+  opacity: 0;
+  transform: translateY(40px) scale(0.98);
+  font-family: 'Nunito', 'Poppins', 'Segoe UI', Arial, sans-serif;
+  margin-bottom: 0.5rem;
+}
+.recommendation-item.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition: opacity 0.6s cubic-bezier(.4,0,.2,1), transform 0.6s cubic-bezier(.4,0,.2,1);
+}
+.career-title {
+  font-size: 1.18rem;
+  font-weight: 700;
+  color: #2a4d69;
+  margin-bottom: 0.1rem;
+  font-family: 'Poppins', 'Nunito', sans-serif;
+}
+.career-confidence {
+  font-size: 1.01rem;
+  color: #3b7dd8;
+  font-weight: 600;
+  margin-bottom: 0.1rem;
+  font-family: 'Nunito', 'Poppins', sans-serif;
+}
+.career-description {
+  font-size: 1.01rem;
+  color: #222;
+  margin-bottom: 0.2rem;
+  font-family: 'Nunito', 'Poppins', sans-serif;
+  line-height: 1.5;
+  background: #e7ecf3;
+  border-radius: 8px;
+  padding: 0.7rem 0.9rem;
+  margin-top: 0.2rem;
+}
+.info-icon {
+  margin-left: 0.4rem;
+  color: #2a4d69;
+  font-size: 1.1rem;
+  cursor: pointer;
+  position: relative;
+  outline: none;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+.info-icon:focus {
+  background: #e7ecf3;
+}
+.tooltip {
+  visibility: hidden;
+  opacity: 0;
+  width: 220px;
+  background: #2a4d69;
+  color: #fff;
+  text-align: left;
+  border-radius: 7px;
+  padding: 0.7rem 1rem;
+  position: absolute;
+  z-index: 10;
+  left: 30px;
+  top: 0;
+  font-size: 0.95rem;
+  transition: opacity 0.2s;
+  box-shadow: 0 2px 8px rgba(42,77,105,0.13);
+  pointer-events: none;
+}
+.info-icon:hover .tooltip, .info-icon:focus .tooltip {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* --- Footer --- */
+footer {
+  border-top: 1.5px solid #e7ecf3;
+  margin-top: 3.5rem;
+  padding: 1.2rem 0 0.7rem 0;
+  text-align: center;
+  font-size: 0.98rem;
+  color: #888;
+  background: #f7f9fb;
+  letter-spacing: 0.1px;
+}
+.footer-divider {
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #2a4d69 0%, #3b7dd8 100%);
+  border-radius: 2px;
+  margin: 0 auto 0.7rem auto;
+  opacity: 0.15;
+}
+footer span { display: block; margin-top: 0.2rem; }
+
+/* --- Responsive --- */
+@media (max-width: 900px) {
+  .glass-card { max-width: 98vw; }
+  .recommendation-item { min-width: 220px; max-width: 98vw; }
+}
+@media (max-width: 700px) {
+  .glass-card { padding: 1.2rem 0.5rem 2rem 0.5rem; }
+  .hero-title { font-size: 2rem; }
+  .recommendations-list { gap: 0.7rem; }
+  .recommendation-item { min-width: 85vw; }
+}
+@media (max-width: 500px) {
+  .glass-card { padding: 0.7rem 0.1rem 1.2rem 0.1rem; }
+  .recommendation-item { min-width: 95vw; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *:before, *:after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* --- Utility --- */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  border: 0;
+}
+.hidden {
+  display: none !important;
+}

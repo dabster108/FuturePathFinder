@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Career Recommendation System</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Nunito:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="/static/favicon.png">
+  <!-- AOS.js for scroll animations -->
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css" />
+  <style>
+    body { font-family: 'Poppins', 'Segoe UI', Arial, sans-serif; }
+    header.hero {
+      background: linear-gradient(100deg, #2a4d69 0%, #3b7dd8 100%);
+      color: #fff;
+      padding: 2.5rem 0 2rem 0;
+      text-align: center;
+      border-radius: 0 0 32px 32px;
+      box-shadow: 0 4px 24px rgba(42,77,105,0.08);
+    }
+    header.hero h1 {
+      font-size: 2.5rem;
+      font-weight: 600;
+      margin-bottom: 0.7rem;
+      letter-spacing: 0.5px;
+    }
+    header.hero p {
+      font-size: 1.13rem;
+      font-weight: 400;
+      max-width: 600px;
+      margin: 0 auto;
+      color: #f2f6fa;
+      line-height: 1.6;
+    }
+    main { min-height: 60vh; }
+    .glass-card {
+      background: rgba(255,255,255,0.85);
+      box-shadow: 0 8px 32px rgba(42,77,105,0.10);
+      border-radius: 18px;
+      padding: 2.2rem 2.5rem 2.5rem 2.5rem;
+      margin-top: -3.5rem;
+      margin-bottom: 2.5rem;
+      max-width: 540px;
+      margin-left: auto;
+      margin-right: auto;
+      backdrop-filter: blur(4px);
+    }
+    @media (max-width: 700px) {
+      .glass-card { padding: 1.2rem 0.5rem 2rem 0.5rem; }
+      header.hero h1 { font-size: 2rem; }
+    }
+    footer {
+      border-top: 1.5px solid #e7ecf3;
+      margin-top: 3.5rem;
+      padding: 1.2rem 0 0.7rem 0;
+      text-align: center;
+      font-size: 0.98rem;
+      color: #888;
+      background: #f7f9fb;
+      letter-spacing: 0.1px;
+    }
+    footer span { display: block; margin-top: 0.2rem; }
+    /* AOS.js styles */
+    [data-aos] {
+      opacity: 0;
+      transition-property: opacity, transform;
+    }
+    [data-aos].aos-animate {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <!-- Hero Section -->
+  <header class="hero" role="banner" data-aos="fade-down">
+    <div class="hero-content">
+      <h1 class="hero-title">Career Recommendation System</h1>
+      <p class="hero-subtitle">Discover your best-fit career path using AI-powered analysis of your academic background, skills, and interests.</p>
+    </div>
+  </header>
+  <main>
+    <!-- Form Section -->
+    <section class="glass-card form-section" aria-label="Career Recommendation Form" data-aos="fade-up">
+      <form id="career-form" autocomplete="off" aria-describedby="form-desc">
+        <div id="form-desc" class="sr-only">Fill in your academic and professional details to get personalized career recommendations.</div>
+        <div class="form-group">
+          <label for="field_of_study">Field of Study</label>
+          <select id="field_of_study" name="field_of_study" required aria-required="true">
+            <option value="" disabled selected>Select your field</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="university_gpa">University GPA</label>
+          <input type="number" id="university_gpa" name="university_gpa" min="0" max="4" step="0.01" placeholder="e.g. 3.5" required aria-required="true">
+        </div>
+        <div class="form-group">
+          <label for="internships_completed">Internships Completed</label>
+          <input type="number" id="internships_completed" name="internships_completed" min="0" max="20" step="1" placeholder="e.g. 2" required aria-required="true">
+        </div>
+        <div class="form-group">
+          <label for="projects_completed">Projects Completed</label>
+          <input type="number" id="projects_completed" name="projects_completed" min="0" max="50" step="1" placeholder="e.g. 5" required aria-required="true">
+        </div>
+        <div class="form-group">
+          <label for="certifications">Certifications</label>
+          <input type="number" id="certifications" name="certifications" min="0" max="20" step="1" placeholder="e.g. 1" required aria-required="true">
+        </div>
+        <div class="form-group">
+          <label for="soft_skills_score">Soft Skills Score <span aria-label="Score from 1 to 10">(1–10)</span></label>
+          <input type="number" id="soft_skills_score" name="soft_skills_score" min="1" max="10" step="1" placeholder="e.g. 8" required aria-required="true">
+        </div>
+        <button type="submit" class="btn" id="submit-btn">🎯 Get Career Recommendations</button>
+      </form>
+    </section>
+    <!-- Results Section -->
+    <section id="results-section" class="results-section hidden" aria-live="polite" data-aos="fade-up">
+      <div class="results-header">
+        <h2 class="results-title">Recommended Careers</h2>
+        <div class="results-actions">
+          <button class="btn-secondary" id="shuffle-btn" aria-label="Shuffle recommendations">Shuffle</button>
+          <button class="btn-secondary" id="save-btn" aria-label="Save recommendations as JSON">Save as JSON</button>
+        </div>
+      </div>
+      <div class="recommendations-scroll">
+        <ul id="recommendations-list" tabindex="0" class="recommendations-list"></ul>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="footer-divider"></div>
+    <span>Made by Dikshanta Chapagain</span>
+    <span>Module Leader: Suman Shrestha</span>
+  </footer>
+  <script src="/static/index.js"></script>
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  <script>AOS.init({ once: true, duration: 800 });</script>
+</body>
+</html>
