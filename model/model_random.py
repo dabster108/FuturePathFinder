@@ -146,6 +146,7 @@ from sklearn.metrics import (
     classification_report, confusion_matrix, roc_curve,
     auc, precision_recall_curve, average_precision_score
 )
+import joblib
 
 
 def load_and_prepare_data(filepath):
@@ -349,6 +350,16 @@ def main():
 
     # Train final model on full training data
     model.fit(X_train_scaled, y_train)
+
+    # Save model, encoders, and scaler for FastAPI
+    joblib.dump({
+        "model": model,
+        "le_field": le_field,
+        "le_target": le_target,
+        "scaler": scaler,
+        "features": features,
+        "numeric_features": numeric_features
+    }, "/Users/dikshanta/Documents/FuturePathFinder/model/career_model.pkl")
 
     # Evaluate on test set with detailed metrics and plots
     evaluate_and_plot(model, X_test_scaled, y_test, le_target, features, df)
