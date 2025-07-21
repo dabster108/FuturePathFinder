@@ -137,6 +137,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import os
 
 from sklearn.model_selection import train_test_split, StratifiedKFold, cross_val_score
 from sklearn.preprocessing import LabelEncoder, StandardScaler, label_binarize
@@ -146,6 +147,7 @@ from sklearn.metrics import (
     classification_report, confusion_matrix, roc_curve,
     auc, precision_recall_curve, average_precision_score
 )
+from sklearn.manifold import TSNE
 import joblib
 
 
@@ -182,7 +184,16 @@ def perform_cross_validation(model, X_train, y_train, cv_splits=5):
     return cv_scores
 
 
+def save_plot(plt, filename, folder_path):
+    os.makedirs(folder_path, exist_ok=True)
+    full_path = os.path.join(folder_path, filename)
+    plt.savefig(full_path, bbox_inches='tight')
+    print(f"Saved {filename} successfully.")
+
+
 def evaluate_and_plot(model, X_test, y_test, le_target, features, df):
+    model_vis_folder = os.path.join(os.path.dirname(__file__), 'model_visualizations')
+    os.makedirs(model_vis_folder, exist_ok=True)
     y_pred = model.predict(X_test)
     y_proba = model.predict_proba(X_test)
 
@@ -206,13 +217,13 @@ def evaluate_and_plot(model, X_test, y_test, le_target, features, df):
     plt.ylabel("Actual")
     plt.xticks(rotation=90)
     plt.tight_layout()
+    save_plot(plt, 'confusion_matrix_heatmap.png', model_vis_folder)
     plt.show()
 
     # ROC Curve (macro-average)
     y_test_bin = label_binarize(y_test, classes=np.unique(y_test))
     fpr, tpr, _ = roc_curve(y_test_bin.ravel(), y_proba.ravel())
     roc_auc = auc(fpr, tpr)
-
     plt.figure(figsize=(8, 6))
     plt.plot(fpr, tpr, color='darkorange', lw=2, label=f"ROC Curve (AUC = {roc_auc:.2f})")
     plt.plot([0, 1], [0, 1], color='gray', linestyle='--')
@@ -221,12 +232,12 @@ def evaluate_and_plot(model, X_test, y_test, le_target, features, df):
     plt.title("ROC Curve (Macro-Average)")
     plt.legend(loc="lower right")
     plt.tight_layout()
+    save_plot(plt, 'roc_curve_macro.png', model_vis_folder)
     plt.show()
 
     # Precision-Recall Curve
     precision, recall, _ = precision_recall_curve(y_test_bin.ravel(), y_proba.ravel())
     pr_auc = average_precision_score(y_test_bin, y_proba, average="macro")
-
     plt.figure(figsize=(8, 6))
     plt.plot(recall, precision, color='blue', lw=2, label=f"PR Curve (AUC = {pr_auc:.2f})")
     plt.xlabel("Recall")
@@ -234,6 +245,7 @@ def evaluate_and_plot(model, X_test, y_test, le_target, features, df):
     plt.title("Precision-Recall Curve (Macro-Average)")
     plt.legend(loc="lower left")
     plt.tight_layout()
+    save_plot(plt, 'precision_recall_curve_macro.png', model_vis_folder)
     plt.show()
 
     # Feature Importance
@@ -244,6 +256,7 @@ def evaluate_and_plot(model, X_test, y_test, le_target, features, df):
     plt.yticks(range(len(indices)), [features[i] for i in indices])
     plt.title("Feature Importances (Random Forest)")
     plt.tight_layout()
+    save_plot(plt, 'feature_importances.png', model_vis_folder)
     plt.show()
 
     # Class Distribution
@@ -253,6 +266,7 @@ def evaluate_and_plot(model, X_test, y_test, le_target, features, df):
     plt.xticks(rotation=90)
     plt.ylabel("Count")
     plt.tight_layout()
+    save_plot(plt, 'class_distribution.png', model_vis_folder)
     plt.show()
 
     # Feature Correlation Heatmap
@@ -260,16 +274,36 @@ def evaluate_and_plot(model, X_test, y_test, le_target, features, df):
     sns.heatmap(df[features].corr(), annot=True, cmap="coolwarm")
     plt.title("Feature Correlation Heatmap")
     plt.tight_layout()
+    save_plot(plt, 'feature_correlation_heatmap.png', model_vis_folder)
     plt.show()
 
-    # Boxplots for each feature by class
-    for feature in features:
-        plt.figure(figsize=(12, 5))
-        sns.boxplot(x='Professional_Career', y=feature, data=df)
-        plt.title(f"{feature} vs Professional_Career")
-        plt.xticks(rotation=90)
+    # Combined boxplot: all features vs Professional_Career
+    n_features = len(features)
+    fig, axes = plt.subplots(n_features, 1, figsize=(12, 5 * n_features))
+    for i, feature in enumerate(features):
+        ax = axes[i] if n_features > 1 else axes
+        sns.boxplot(x='Professional_Career', y=feature, data=df, ax=ax)
+        ax.set_title(f"{feature} vs Professional_Career")
+        ax.set_xticklabels(ax.get_xticklabels(), rotation=90)
+    plt.tight_layout()
+    save_plot(plt, 'combined_boxplot.png', model_vis_folder)
+    plt.show()
+
+    # t-SNE visualization
+    try:
+        tsne = TSNE(n_components=2, random_state=42)
+        X_embedded = tsne.fit_transform(df[features])
+        plt.figure(figsize=(10, 8))
+        scatter = plt.scatter(X_embedded[:, 0], X_embedded[:, 1], c=df['Professional_Career_enc'], cmap='tab10', alpha=0.7)
+        plt.title('t-SNE Feature Space')
+        plt.xlabel('t-SNE 1')
+        plt.ylabel('t-SNE 2')
+        plt.colorbar(scatter, ticks=range(len(le_target.classes_)), label='Career')
         plt.tight_layout()
+        save_plot(plt, 'tsne_feature_space.png', model_vis_folder)
         plt.show()
+    except Exception as e:
+        print(f"t-SNE visualization failed: {e}")
 
 
 def interactive_prediction(model, le_field, le_target):
