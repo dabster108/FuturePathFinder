@@ -116,7 +116,7 @@ def recommend(req: RecommendRequest):
     arr_for_scaler[:, 1:] = scaler.transform(arr_for_scaler[:, 1:])
     # Predict
     probs = model.predict_proba(arr_for_scaler)[0]
-    top_idx = np.argsort(probs)[::-1][:5]
+    top_idx = np.argsort(probs)[::-1][:3]  # Show only top 3 recommendations
     results = []
     for idx in top_idx:
         name = le_target.inverse_transform([idx])[0]

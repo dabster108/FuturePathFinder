@@ -3,139 +3,210 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Career Recommendation System</title>
+  <title>Career Discovery AI</title>
   <link rel="stylesheet" href="/static/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Nunito:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/png" href="/static/favicon.png">
-  <!-- AOS.js for scroll animations -->
-  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css" />
-  <style>
-    body { font-family: 'Poppins', 'Segoe UI', Arial, sans-serif; }
-    header.hero {
-      background: linear-gradient(100deg, #2a4d69 0%, #3b7dd8 100%);
-      color: #fff;
-      padding: 2.5rem 0 2rem 0;
-      text-align: center;
-      border-radius: 0 0 32px 32px;
-      box-shadow: 0 4px 24px rgba(42,77,105,0.08);
-    }
-    header.hero h1 {
-      font-size: 2.5rem;
-      font-weight: 600;
-      margin-bottom: 0.7rem;
-      letter-spacing: 0.5px;
-    }
-    header.hero p {
-      font-size: 1.13rem;
-      font-weight: 400;
-      max-width: 600px;
-      margin: 0 auto;
-      color: #f2f6fa;
-      line-height: 1.6;
-    }
-    main { min-height: 60vh; }
-    .glass-card {
-      background: rgba(255,255,255,0.85);
-      box-shadow: 0 8px 32px rgba(42,77,105,0.10);
-      border-radius: 18px;
-      padding: 2.2rem 2.5rem 2.5rem 2.5rem;
-      margin-top: -3.5rem;
-      margin-bottom: 2.5rem;
-      max-width: 540px;
-      margin-left: auto;
-      margin-right: auto;
-      backdrop-filter: blur(4px);
-    }
-    @media (max-width: 700px) {
-      .glass-card { padding: 1.2rem 0.5rem 2rem 0.5rem; }
-      header.hero h1 { font-size: 2rem; }
-    }
-    footer {
-      border-top: 1.5px solid #e7ecf3;
-      margin-top: 3.5rem;
-      padding: 1.2rem 0 0.7rem 0;
-      text-align: center;
-      font-size: 0.98rem;
-      color: #888;
-      background: #f7f9fb;
-      letter-spacing: 0.1px;
-    }
-    footer span { display: block; margin-top: 0.2rem; }
-    /* AOS.js styles */
-    [data-aos] {
-      opacity: 0;
-      transition-property: opacity, transform;
-    }
-    [data-aos].aos-animate {
-      opacity: 1;
-    }
-  </style>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 </head>
 <body>
-  <!-- Hero Section -->
-  <header class="hero" role="banner" data-aos="fade-down">
-    <div class="hero-content">
-      <h1 class="hero-title">Career Recommendation System</h1>
-      <p class="hero-subtitle">Discover your best-fit career path using AI-powered analysis of your academic background, skills, and interests.</p>
+  <!-- Animated Background -->
+  <div class="bg-animation">
+    <div class="floating-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+      <div class="shape shape-4"></div>
+      <div class="shape shape-5"></div>
     </div>
-  </header>
-  <main>
-    <!-- Form Section -->
-    <section class="glass-card form-section" aria-label="Career Recommendation Form" data-aos="fade-up">
-      <form id="career-form" autocomplete="off" aria-describedby="form-desc">
-        <div id="form-desc" class="sr-only">Fill in your academic and professional details to get personalized career recommendations.</div>
-        <div class="form-group">
-          <label for="field_of_study">Field of Study</label>
-          <select id="field_of_study" name="field_of_study" required aria-required="true">
-            <option value="" disabled selected>Select your field</option>
-          </select>
+  </div>
+
+  <!-- Hero Section -->
+  <header class="hero" role="banner">
+    <div class="hero-content">
+      <div class="hero-icon">
+        <i data-lucide="target"></i>
+      </div>
+      <h1 class="hero-title">
+        <span class="title-gradient">Career</span> Discovery
+      </h1>
+      <p class="hero-subtitle">
+        Unlock your potential with AI-powered career insights tailored to your unique academic journey and professional aspirations.
+      </p>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <span class="stat-number">15K+</span>
+          <span class="stat-label">Career Matches</span>
         </div>
-        <div class="form-group">
-          <label for="university_gpa">University GPA</label>
-          <input type="number" id="university_gpa" name="university_gpa" min="0" max="4" step="0.01" placeholder="e.g. 3.5" required aria-required="true">
+        <div class="stat-item">
+          <span class="stat-number">95%</span>
+          <span class="stat-label">Accuracy Rate</span>
         </div>
-        <div class="form-group">
-          <label for="internships_completed">Internships Completed</label>
-          <input type="number" id="internships_completed" name="internships_completed" min="0" max="20" step="1" placeholder="e.g. 2" required aria-required="true">
-        </div>
-        <div class="form-group">
-          <label for="projects_completed">Projects Completed</label>
-          <input type="number" id="projects_completed" name="projects_completed" min="0" max="50" step="1" placeholder="e.g. 5" required aria-required="true">
-        </div>
-        <div class="form-group">
-          <label for="certifications">Certifications</label>
-          <input type="number" id="certifications" name="certifications" min="0" max="20" step="1" placeholder="e.g. 1" required aria-required="true">
-        </div>
-        <div class="form-group">
-          <label for="soft_skills_score">Soft Skills Score <span aria-label="Score from 1 to 10">(1–10)</span></label>
-          <input type="number" id="soft_skills_score" name="soft_skills_score" min="1" max="10" step="1" placeholder="e.g. 8" required aria-required="true">
-        </div>
-        <button type="submit" class="btn" id="submit-btn">🎯 Get Career Recommendations</button>
-      </form>
-    </section>
-    <!-- Results Section -->
-    <section id="results-section" class="results-section hidden" aria-live="polite" data-aos="fade-up">
-      <div class="results-header">
-        <h2 class="results-title">Recommended Careers</h2>
-        <div class="results-actions">
-          <button class="btn-secondary" id="shuffle-btn" aria-label="Shuffle recommendations">Shuffle</button>
-          <button class="btn-secondary" id="save-btn" aria-label="Save recommendations as JSON">Save as JSON</button>
+        <div class="stat-item">
+          <span class="stat-number">50+</span>
+          <span class="stat-label">Industries</span>
         </div>
       </div>
-      <div class="recommendations-scroll">
-        <ul id="recommendations-list" tabindex="0" class="recommendations-list"></ul>
+    </div>
+  </header>
+
+  <main>
+    <!-- Form Section -->
+    <section class="form-container">
+      <div class="glass-card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <i data-lucide="user-circle"></i>
+            Tell Us About Yourself
+          </h2>
+          <p class="card-subtitle">Share your academic journey to discover perfect career matches</p>
+        </div>
+        
+        <form id="career-form" autocomplete="off" aria-describedby="form-desc">
+          <div id="form-desc" class="sr-only">Fill in your academic and professional details to get personalized career recommendations.</div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="field_of_study">
+                <i data-lucide="graduation-cap"></i>
+                Field of Study
+              </label>
+              <div class="input-wrapper">
+                <select id="field_of_study" name="field_of_study" required aria-required="true">
+                  <option value="" disabled selected>Choose your field</option>
+                </select>
+                <i data-lucide="chevron-down" class="select-arrow"></i>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="university_gpa">
+                <i data-lucide="award"></i>
+                University GPA
+              </label>
+              <div class="input-wrapper">
+                <input type="number" id="university_gpa" name="university_gpa" min="0" max="4" step="0.01" placeholder="3.5" required aria-required="true">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="internships_completed">
+                <i data-lucide="briefcase"></i>
+                Internships Completed
+              </label>
+              <div class="input-wrapper">
+                <input type="number" id="internships_completed" name="internships_completed" min="0" max="20" step="1" placeholder="2" required aria-required="true">
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="projects_completed">
+                <i data-lucide="code"></i>
+                Projects Completed
+              </label>
+              <div class="input-wrapper">
+                <input type="number" id="projects_completed" name="projects_completed" min="0" max="50" step="1" placeholder="5" required aria-required="true">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="certifications">
+                <i data-lucide="badge-check"></i>
+                Certifications
+              </label>
+              <div class="input-wrapper">
+                <input type="number" id="certifications" name="certifications" min="0" max="20" step="1" placeholder="1" required aria-required="true">
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="soft_skills_score">
+                <i data-lucide="users"></i>
+                Soft Skills Score <span class="score-range">(1–10)</span>
+              </label>
+              <div class="input-wrapper">
+                <input type="range" id="soft_skills_range" min="1" max="10" step="1" value="8" class="range-slider">
+                <input type="number" id="soft_skills_score" name="soft_skills_score" min="1" max="10" step="1" value="8" required aria-required="true" class="range-input">
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-primary" id="submit-btn">
+            <i data-lucide="sparkles"></i>
+            <span>Discover My Career Path</span>
+            <div class="btn-shine"></div>
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Results Section -->
+    <section id="results-section" class="results-section hidden" aria-live="polite">
+      <div class="results-container">
+        <div class="results-header">
+          <div class="results-title-group">
+            <h2 class="results-title">
+              Top 3 recommended careers for you ❤️
+            </h2>
+            <p class="results-subtitle">Personalized career paths based on your profile</p>
+          </div>
+          <div class="results-actions">
+            <button class="btn-secondary" id="save-btn" aria-label="Save recommendations as JSON">
+              <i data-lucide="download"></i>
+              <span>Export</span>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Updated career cards container -->
+        <div class="career-grid">
+          <ul id="recommendations-list" tabindex="0" class="recommendations-list"></ul>
+        </div>
       </div>
     </section>
   </main>
+
   <footer>
-    <div class="footer-divider"></div>
-    <span>Made by Dikshanta Chapagain</span>
-    <span>Module Leader: Suman Shrestha</span>
+    <div class="footer-content">
+      <div class="footer-brand">
+        <i data-lucide="zap"></i>
+        <span>Career Discovery AI</span>
+      </div>
+      <div class="footer-info">
+        <span>Crafted with ❤️ by Dikshanta Chapagain</span>
+        <span>Module Leader: Suman Shrestha</span>
+      </div>
+      <div class="footer-links">
+        <a href="#" class="footer-link">Privacy</a>
+        <a href="#" class="footer-link">Terms</a>
+        <a href="#" class="footer-link">Support</a>
+      </div>
+    </div>
   </footer>
+
   <script src="/static/index.js"></script>
-  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
-  <script>AOS.init({ once: true, duration: 800 });</script>
+  <script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+    
+    // Range slider sync
+    const rangeSlider = document.getElementById('soft_skills_range');
+    const rangeInput = document.getElementById('soft_skills_score');
+    
+    rangeSlider.addEventListener('input', () => {
+      rangeInput.value = rangeSlider.value;
+    });
+    
+    rangeInput.addEventListener('input', () => {
+      rangeSlider.value = rangeInput.value;
+    });
+  </script>
 </body>
 </html>

@@ -14,34 +14,27 @@ from sklearn.metrics import (
 )
 from sklearn.manifold import TSNE
 from sklearn.inspection import DecisionBoundaryDisplay
+from sklearn.tree import plot_tree
 import joblib
-
+from graphviz import Digraph
 
 def load_and_prepare_data(filepath):
     df = pd.read_csv(filepath)
     df['Field_of_Study'] = df['Field_of_Study'].astype(str).str.strip()
     df['Professional_Career'] = df['Professional_Career'].astype(str).str.strip()
-
-    # Label encode categorical features and target
     le_field = LabelEncoder()
     df['Field_of_Study_enc'] = le_field.fit_transform(df['Field_of_Study'])
-
     le_target = LabelEncoder()
     df['Professional_Career_enc'] = le_target.fit_transform(df['Professional_Career'])
-
     return df, le_field, le_target
-
 
 def scale_features(X_train, X_test, numeric_features):
     scaler = StandardScaler()
     X_train_scaled = X_train.copy()
     X_test_scaled = X_test.copy()
-
     X_train_scaled[numeric_features] = scaler.fit_transform(X_train[numeric_features])
     X_test_scaled[numeric_features] = scaler.transform(X_test[numeric_features])
-
     return X_train_scaled, X_test_scaled, scaler
-
 
 def perform_cross_validation(model, X_train, y_train, cv_splits=5):
     cv = StratifiedKFold(n_splits=cv_splits, shuffle=True, random_state=42)
@@ -49,30 +42,24 @@ def perform_cross_validation(model, X_train, y_train, cv_splits=5):
     print(f"Cross-validation Accuracy: {cv_scores.mean():.3f} ± {cv_scores.std():.3f}")
     return cv_scores
 
-
 def save_plot(plt, filename, folder_path):
     os.makedirs(folder_path, exist_ok=True)
     full_path = os.path.join(folder_path, filename)
     plt.savefig(full_path, bbox_inches='tight')
     print(f"Saved {filename} successfully.")
 
-
 def evaluate_and_plot(model, X_test, y_test, le_target, features, df):
     model_vis_folder = os.path.join(os.path.dirname(__file__), 'model_visualizations')
     os.makedirs(model_vis_folder, exist_ok=True)
     y_pred = model.predict(X_test)
     y_proba = model.predict_proba(X_test)
-
     print("\n=== Test Set Evaluation ===")
     print(f"Accuracy: {accuracy_score(y_test, y_pred):.3f}")
     print(f"Precision (macro): {precision_score(y_test, y_pred, average='macro'):.3f}")
     print(f"Recall (macro): {recall_score(y_test, y_pred, average='macro'):.3f}")
     print(f"F1 Score (macro): {f1_score(y_test, y_pred, average='macro'):.3f}")
-
     print("\nClassification Report:\n")
     print(classification_report(y_test, y_pred, target_names=le_target.classes_))
-
-    # Confusion matrix heatmap
     plt.figure(figsize=(12, 10))
     cm = confusion_matrix(y_test, y_pred)
     sns.heatmap(cm, annot=True, fmt='d', cmap="Blues",
@@ -85,8 +72,6 @@ def evaluate_and_plot(model, X_test, y_test, le_target, features, df):
     plt.tight_layout()
     save_plot(plt, 'confusion_matrix_heatmap.png', model_vis_folder)
     plt.show()
-
-    # ROC Curve (macro-average)
     y_test_bin = label_binarize(y_test, classes=np.unique(y_test))
     fpr, tpr, _ = roc_curve(y_test_bin.ravel(), y_proba.ravel())
     roc_auc = auc(fpr, tpr)
@@ -100,8 +85,6 @@ def evaluate_and_plot(model, X_test, y_test, le_target, features, df):
     plt.tight_layout()
     save_plot(plt, 'roc_curve_macro.png', model_vis_folder)
     plt.show()
-
-    # Precision-Recall Curve
     precision, recall, _ = precision_recall_curve(y_test_bin.ravel(), y_proba.ravel())
     pr_auc = average_precision_score(y_test_bin, y_proba, average="macro")
     plt.figure(figsize=(8, 6))
@@ -113,8 +96,6 @@ def evaluate_and_plot(model, X_test, y_test, le_target, features, df):
     plt.tight_layout()
     save_plot(plt, 'precision_recall_curve_macro.png', model_vis_folder)
     plt.show()
-
-    # Feature Importance
     importances = model.feature_importances_
     indices = np.argsort(importances)
     plt.figure(figsize=(8, 6))
@@ -124,8 +105,6 @@ def evaluate_and_plot(model, X_test, y_test, le_target, features, df):
     plt.tight_layout()
     save_plot(plt, 'feature_importances.png', model_vis_folder)
     plt.show()
-
-    # Class Distribution
     plt.figure(figsize=(10, 5))
     df['Professional_Career'].value_counts().plot(kind='bar', color='coral')
     plt.title("Class Distribution: Professional_Career")
@@ -134,16 +113,12 @@ def evaluate_and_plot(model, X_test, y_test, le_target, features, df):
     plt.tight_layout()
     save_plot(plt, 'class_distribution.png', model_vis_folder)
     plt.show()
-
-    # Feature Correlation Heatmap
     plt.figure(figsize=(8, 6))
     sns.heatmap(df[features].corr(), annot=True, cmap="coolwarm")
     plt.title("Feature Correlation Heatmap")
     plt.tight_layout()
     save_plot(plt, 'feature_correlation_heatmap.png', model_vis_folder)
     plt.show()
-
-    # Combined boxplot: all features vs Professional_Career
     n_features = len(features)
     fig, axes = plt.subplots(n_features, 1, figsize=(12, 5 * n_features))
     for i, feature in enumerate(features):
@@ -154,8 +129,6 @@ def evaluate_and_plot(model, X_test, y_test, le_target, features, df):
     plt.tight_layout()
     save_plot(plt, 'combined_boxplot.png', model_vis_folder)
     plt.show()
-
-    # t-SNE visualization
     try:
         tsne = TSNE(n_components=2, random_state=42)
         X_embedded = tsne.fit_transform(df[features])
@@ -171,12 +144,10 @@ def evaluate_and_plot(model, X_test, y_test, le_target, features, df):
     except Exception as e:
         print(f"t-SNE visualization failed: {e}")
 
-
 def interactive_prediction(model, le_field, le_target):
     print("\n=== Career Prediction from Input ===")
     unique_fields = sorted(le_field.classes_)
     print("Available Fields of Study:", unique_fields)
-
     def get_valid_input(prompt, valid_values=None, cast_func=str):
         while True:
             val = input(prompt).strip()
@@ -193,17 +164,13 @@ def interactive_prediction(model, le_field, le_target):
                     return val_cast
                 except ValueError:
                     print(f"Invalid input. Please enter a value of type {cast_func.__name__}.")
-
     field_input = get_valid_input("Enter your Field of Study: ", valid_values=unique_fields, cast_func=str)
     field_enc = le_field.transform([field_input])[0]
-
     uni_gpa = get_valid_input("University GPA (e.g. 3.5): ", cast_func=float)
     internships = get_valid_input("Internships Completed (integer): ", cast_func=int)
     projects = get_valid_input("Projects Completed (integer): ", cast_func=int)
     certifications = get_valid_input("Certifications (integer): ", cast_func=int)
     soft_skills = get_valid_input("Soft Skills Score (1-10): ", cast_func=int)
-
-    # Prepare input dataframe
     input_df = pd.DataFrame([{
         'Field_of_Study_enc': field_enc,
         'University_GPA': uni_gpa,
@@ -212,11 +179,9 @@ def interactive_prediction(model, le_field, le_target):
         'Certifications': certifications,
         'Soft_Skills_Score': soft_skills
     }])
-
     pred_enc = model.predict(input_df)[0]
     pred_label = le_target.inverse_transform([pred_enc])[0]
     print(f"\nRecommended Career Based on Your Inputs: {pred_label}")
-
 
 def plot_training_curves(cv_scores, output_folder):
     plt.figure(figsize=(8, 6))
@@ -228,12 +193,10 @@ def plot_training_curves(cv_scores, output_folder):
     save_plot(plt, 'accuracy_training_curve.png', output_folder)
     plt.show()
 
-
 def plot_decision_boundaries(model, X, y, features, le_target, output_folder):
     if X.shape[1] != 2:
         print("Decision boundaries can only be plotted for 2D feature spaces.")
         return
-
     plt.figure(figsize=(8, 6))
     DecisionBoundaryDisplay.from_estimator(model, X, response_method='predict', alpha=0.5, cmap='coolwarm')
     scatter = plt.scatter(X.iloc[:, 0], X.iloc[:, 1], c=y, cmap='coolwarm', edgecolor='k')
@@ -246,31 +209,22 @@ def plot_decision_boundaries(model, X, y, features, le_target, output_folder):
 
 def plot_bar_pie_charts(df, target_column, output_folder):
     import matplotlib.ticker as mtick
-    sns.set(style='whitegrid')  # Clean seaborn style
-
-    # Value counts
+    sns.set(style='whitegrid')
     value_counts = df[target_column].value_counts().sort_index()
     total = value_counts.sum()
-
-    # --- BAR CHART ---
     plt.figure(figsize=(12, 6))
     bars = plt.bar(value_counts.index.astype(str), value_counts.values, color='skyblue', edgecolor='black')
     plt.title('Bar Chart of Class Distribution', fontsize=14)
     plt.xlabel(target_column, fontsize=12)
     plt.ylabel('Count', fontsize=12)
-
-    # Add count labels on top of bars with proper spacing
     for bar in bars:
         height = bar.get_height()
-        plt.text(bar.get_x() + bar.get_width()/2, height + total * 0.01,  # Add 1% spacing above bar
+        plt.text(bar.get_x() + bar.get_width()/2, height + total * 0.01,
                  f'{int(height)}', ha='center', va='bottom', fontsize=10)
-
     plt.xticks(rotation=45, ha='right')
     plt.tight_layout()
     save_plot(plt, 'bar_chart_class_distribution.png', output_folder)
     plt.show()
-
-    # --- PIE CHART ---
     plt.figure(figsize=(10, 10))
     labels = [f"{label} ({count / total * 100:.1f}%)" for label, count in value_counts.items()]
     wedges, texts = plt.pie(
@@ -279,8 +233,6 @@ def plot_bar_pie_charts(df, target_column, output_folder):
         startangle=140,
         radius=1.2
     )
-
-    # Legend outside the chart
     plt.legend(wedges, labels, title=target_column, loc='center left', bbox_to_anchor=(1.05, 0.5), fontsize=9)
     plt.title('Pie Chart of Class Distribution', fontsize=14)
     plt.axis('equal')
@@ -288,44 +240,64 @@ def plot_bar_pie_charts(df, target_column, output_folder):
     save_plot(plt, 'pie_chart_class_distribution.png', output_folder)
     plt.show()
 
+def visualize_one_decision_tree(model, feature_names, class_names, output_folder, tree_index=0):
+    plt.figure(figsize=(16, 10))
+    estimator = model.estimators_[tree_index]
+    plot_tree(estimator,
+              feature_names=feature_names,
+              class_names=class_names,
+              filled=True,
+              rounded=True,
+              fontsize=8,
+              max_depth=3)
+    plt.title(f"Decision Tree #{tree_index + 1} from Random Forest")
+    plt.tight_layout()
+    save_plot(plt, f'decision_tree_{tree_index + 1}.png', output_folder)
+    plt.show()
+
+def create_example_decision_tree(output_path):
+    dot = Digraph(comment='Example Decision Tree', format='png')
+    dot.attr(size='8,6')
+    dot.node('A', 'Field of Study?\n(Engineering/Other)')
+    dot.node('B', 'GPA > 3.5?')
+    dot.node('C', 'Soft Skills > 6?')
+    dot.node('D', 'Career: Engineer')
+    dot.node('E', 'Career: Data Scientist')
+    dot.node('F', 'Career: Business Analyst')
+    dot.node('G', 'Career: Designer')
+
+    dot.edge('A', 'B', label='Engineering')
+    dot.edge('A', 'C', label='Other')
+    dot.edge('B', 'D', label='Yes')
+    dot.edge('B', 'E', label='No')
+    dot.edge('C', 'F', label='Yes')
+    dot.edge('C', 'G', label='No')
+
+    dot.render(output_path, view=False)
+    print(f"Example decision tree saved to {output_path}.png")
+
+# Usage example:
+# create_example_decision_tree('/Users/dikshanta/Documents/FuturePathFinder/model/model_visualizations/example_decision_tree')
+
 def main():
     data_path = "/Users/dikshanta/Documents/FuturePathFinder/data/datasets/cleaned_data.csv"
-
     df, le_field, le_target = load_and_prepare_data(data_path)
-
     features = ['Field_of_Study_enc', 'University_GPA', 'Internships_Completed',
                 'Projects_Completed', 'Certifications', 'Soft_Skills_Score']
     target = 'Professional_Career_enc'
-
     X = df[features]
     y = df[target]
-
-    # Split data
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, stratify=y, test_size=0.2, random_state=42)
-
-    # Numeric columns to scale
     numeric_features = ['University_GPA', 'Internships_Completed',
                         'Projects_Completed', 'Certifications', 'Soft_Skills_Score']
-
-    # Scale features
     X_train_scaled, X_test_scaled, scaler = scale_features(X_train, X_test, numeric_features)
-
-    # Initialize model
     model = RandomForestClassifier(random_state=42)
-
-    # Cross-validation
     print("Performing 5-fold Stratified Cross-validation...")
     cv_scores = perform_cross_validation(model, X_train_scaled, y_train, cv_splits=5)
-
-    # Plot training curves
     model_vis_folder = os.path.join(os.path.dirname(__file__), 'model_visualizations')
     plot_training_curves(cv_scores, model_vis_folder)
-
-    # Train final model on full training data
     model.fit(X_train_scaled, y_train)
-
-    # Save model, encoders, and scaler for FastAPI
     joblib.dump({
         "model": model,
         "le_field": le_field,
@@ -334,20 +306,13 @@ def main():
         "features": features,
         "numeric_features": numeric_features
     }, "/Users/dikshanta/Documents/FuturePathFinder/model/career_model.pkl")
-
-    # Evaluate on test set with detailed metrics and plots
     evaluate_and_plot(model, X_test_scaled, y_test, le_target, features, df)
-
-    # Plot decision boundaries (if applicable)
+    visualize_one_decision_tree(model, features, le_target.classes_, model_vis_folder)
     if len(features) == 2:
         plot_decision_boundaries(model, X_test_scaled, y_test, features, le_target, model_vis_folder)
-
-    # Plot bar and pie charts for class distribution
     plot_bar_pie_charts(df, 'Professional_Career', model_vis_folder)
-
-    # Interactive prediction
     interactive_prediction(model, le_field, le_target)
-
+    create_example_decision_tree(os.path.join(model_vis_folder, 'example_decision_tree'))
 
 if __name__ == "__main__":
     main()

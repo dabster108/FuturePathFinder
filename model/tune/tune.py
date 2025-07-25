@@ -102,6 +102,17 @@ def main():
     # Convert None to str 'None' for plotting
     results['param_max_depth'] = results['param_max_depth'].apply(lambda x: 'None' if x is None else str(x))
 
+    # Heatmap of Accuracy Scores (2D grid of parameters)
+    import seaborn as sns
+    pivot = results.pivot_table(index='param_max_depth', columns='param_n_estimators', values='mean_test_score')
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(pivot, annot=True, cmap='viridis')
+    plt.title('Accuracy Heatmap: max_depth vs n_estimators')
+    plt.xlabel('n_estimators')
+    plt.ylabel('max_depth')
+    save_plot(plt, 'heatmap_maxdepth_vs_nestimators.png', tune_vis_folder)
+    plt.close()
+
     # Plot mean test score vs max_depth for different n_estimators
     plt.figure(figsize=(10, 6))
     for n_est in sorted(results['param_n_estimators'].unique()):
@@ -128,10 +139,41 @@ def main():
     save_plot(plt, 'min_samples_split_vs_accuracy_by_min_samples_leaf.png', tune_vis_folder)
     plt.close()
 
+    # Bar Chart of Top N Configurations by Accuracy
+    top_n = results.sort_values(by='mean_test_score', ascending=False).head(10)
+    plt.figure(figsize=(10, 6))
+    plt.barh(range(len(top_n)), top_n['mean_test_score'], color='skyblue')
+    plt.yticks(range(len(top_n)), top_n['params'])
+    plt.xlabel('Mean CV Accuracy')
+    plt.title('Top 10 Parameter Sets by Accuracy')
+    save_plot(plt, 'top10_param_sets_accuracy.png', tune_vis_folder)
+    plt.close()
+
     # Histogram of best parameters frequency (optional)
     best_params_df = pd.DataFrame([grid_search.best_params_])
     print("\nBest parameters summary:")
     print(best_params_df)
+
+    # Scatter plot of max_depth vs n_estimators with accuracy color scale
+    plt.figure(figsize=(10, 6))
+    # Convert None to string for plotting clarity
+    results['param_max_depth'] = results['param_max_depth'].apply(lambda x: -1 if x == 'None' or x is None else int(x))
+    scatter = plt.scatter(
+        results['param_max_depth'],
+        results['param_n_estimators'],
+        c=results['mean_test_score'],
+        cmap='viridis',
+        edgecolor='k',
+        s=100
+    )
+    cbar = plt.colorbar(scatter)
+    cbar.set_label('Mean CV Accuracy')
+    plt.xlabel('max_depth (-1 means None)')
+    plt.ylabel('n_estimators')
+    plt.title('Scatter Plot: max_depth vs n_estimators (Colored by Accuracy)')
+    plt.grid(True)
+    save_plot(plt, 'scatter_maxdepth_vs_nestimators_accuracy.png', tune_vis_folder)
+    plt.close()
 
 if __name__ == "__main__":
     main()

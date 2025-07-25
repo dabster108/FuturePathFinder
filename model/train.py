@@ -62,3 +62,8 @@ print(f"Avg F1 Score : {avg_f1:.4f}")
 
 print("\n=== Overall Score ===")
 print(f"Overall Accuracy Score (Mean of 10 Runs): {avg_acc:.4f}")
+
+
+X_train_main, X_val, y_train_main, y_val = train_test_split(
+    X_train, y_train, stratify=y_train, test_size=0.125, random_state=i
+)
