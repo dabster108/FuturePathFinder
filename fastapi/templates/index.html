@@ -148,12 +148,12 @@
         <div class="results-header">
           <div class="results-title-group">
             <h2 class="results-title">
-              Top 3 recommended careers for you ❤️
+              The best career for you is... ❤️
             </h2>
-            <p class="results-subtitle">Personalized career paths based on your profile</p>
+            <p class="results-subtitle">Your personalized career path based on your profile</p>
           </div>
           <div class="results-actions">
-            <button class="btn-secondary" id="save-btn" aria-label="Save recommendations as JSON">
+            <button class="btn-secondary" id="save-btn" aria-label="Save recommendation as JSON">
               <i data-lucide="download"></i>
               <span>Export</span>
             </button>
@@ -178,9 +178,9 @@
         <span>Module Leader: Suman Shrestha</span>
       </div>
       <div class="footer-links">
-        <a href="#" class="footer-link">Privacy</a>
-        <a href="#" class="footer-link">Terms</a>
-        <a href="#" class="footer-link">Support</a>
+        <a href="#" class="footer-link" rel="noopener noreferrer">Privacy</a>
+        <a href="#" class="footer-link" rel="noopener noreferrer">Terms</a>
+        <a href="#" class="footer-link" rel="noopener noreferrer">Support</a>
       </div>
     </div>
   </footer>
@@ -188,19 +188,9 @@
   <script src="/static/index.js"></script>
   <script>
     // Initialize Lucide icons
+    // This is explicitly called here as well, in case index.js's DOMContentLoaded fires before Lucide script is fully loaded.
+    // It's also called in index.js for dynamic elements. Redundant but safer.
     lucide.createIcons();
-    
-    // Range slider sync
-    const rangeSlider = document.getElementById('soft_skills_range');
-    const rangeInput = document.getElementById('soft_skills_score');
-    
-    rangeSlider.addEventListener('input', () => {
-      rangeInput.value = rangeSlider.value;
-    });
-    
-    rangeInput.addEventListener('input', () => {
-      rangeSlider.value = rangeInput.value;
-    });
   </script>
 </body>
 </html>
