@@ -4,6 +4,11 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+import warnings
+from sklearn.exceptions import UndefinedMetricWarning
+import matplotlib.pyplot as plt
+
+warnings.filterwarnings("ignore", category=UndefinedMetricWarning)
 
 df = pd.read_csv("/Users/dikshanta/Documents/FuturePathFinder/data/datasets/cleaned_data.csv")
 df['Field_of_Study'] = df['Field_of_Study'].astype(str).str.strip()
@@ -67,3 +72,22 @@ print(f"Overall Accuracy Score (Mean of 10 Runs): {avg_acc:.4f}")
 X_train_main, X_val, y_train_main, y_val = train_test_split(
     X_train, y_train, stratify=y_train, test_size=0.125, random_state=i
 )
+
+def plot_cv_accuracy(cv_scores, output_path="cv_accuracy.png"):
+    """
+    Plots accuracy over cross-validation folds.
+    
+    Parameters:
+        cv_scores (list): List of accuracy scores from each CV fold.
+        output_path (str): Path to save the plot image.
+    """
+    plt.figure(figsize=(8, 5))
+    plt.plot(range(1, len(cv_scores)+1), cv_scores, marker='o', color='green', linewidth=2)
+    plt.title('Model Accuracy Over Cross-Validation Folds')
+    plt.xlabel('Fold Number')
+    plt.ylabel('Accuracy')
+    plt.ylim(0, 1)
+    plt.grid(True)
+    plt.tight_layout()
+    plt.savefig(output_path)
+    plt.close()

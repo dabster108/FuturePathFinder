@@ -1,0 +1,18 @@
+// Example Decision Tree
+digraph {
+	size="8,6"
+	A [label="Field of Study?
+(Engineering/Other)"]
+	B [label="GPA > 3.5?"]
+	C [label="Soft Skills > 6?"]
+	D [label="Career: Engineer"]
+	E [label="Career: Data Scientist"]
+	F [label="Career: Business Analyst"]
+	G [label="Career: Designer"]
+	A -> B [label=Engineering]
+	A -> C [label=Other]
+	B -> D [label=Yes]
+	B -> E [label=No]
+	C -> F [label=Yes]
+	C -> G [label=No]
+}

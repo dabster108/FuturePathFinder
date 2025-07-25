@@ -16,7 +16,6 @@ from sklearn.manifold import TSNE
 from sklearn.inspection import DecisionBoundaryDisplay
 from sklearn.tree import plot_tree
 import joblib
-from graphviz import Digraph
 
 def load_and_prepare_data(filepath):
     df = pd.read_csv(filepath)
@@ -60,8 +59,36 @@ def evaluate_and_plot(model, X_test, y_test, le_target, features, df):
     print(f"F1 Score (macro): {f1_score(y_test, y_pred, average='macro'):.3f}")
     print("\nClassification Report:\n")
     print(classification_report(y_test, y_pred, target_names=le_target.classes_))
-    plt.figure(figsize=(12, 10))
+    
     cm = confusion_matrix(y_test, y_pred)
+
+    # --- UPDATED: Confusion Matrix (Numbers Only) ---
+    plt.figure(figsize=(12, 10))
+    # Create an axes object
+    ax = plt.gca() 
+    # Use imshow to create a grid, but with a transparent colormap or 'None'
+    # Using 'white' colormap and no interpolation to just show the grid for text placement
+    ax.imshow(np.zeros_like(cm), cmap='Greys', interpolation='nearest', vmin=0, vmax=1) 
+    
+    # Manually place text for each cell
+    for (i, j), val in np.ndenumerate(cm):
+        ax.text(j, i, f'{val}', ha='center', va='center', fontsize=10, color='black')
+
+    ax.set_xticks(np.arange(len(le_target.classes_)))
+    ax.set_yticks(np.arange(len(le_target.classes_)))
+    ax.set_xticklabels(le_target.classes_, rotation=90)
+    ax.set_yticklabels(le_target.classes_)
+    
+    ax.set_title("Confusion Matrix")
+    ax.set_xlabel("Predicted")
+    ax.set_ylabel("Actual")
+    plt.tight_layout()
+    save_plot(plt, 'confusion_matrix_text_only.png', model_vis_folder)
+    plt.show()
+    # --- END UPDATED SECTION ---
+
+    # Original Confusion Matrix (Heatmap) - Kept as requested to not change others
+    plt.figure(figsize=(12, 10))
     sns.heatmap(cm, annot=True, fmt='d', cmap="Blues",
                 xticklabels=le_target.classes_,
                 yticklabels=le_target.classes_)
@@ -72,6 +99,7 @@ def evaluate_and_plot(model, X_test, y_test, le_target, features, df):
     plt.tight_layout()
     save_plot(plt, 'confusion_matrix_heatmap.png', model_vis_folder)
     plt.show()
+
     y_test_bin = label_binarize(y_test, classes=np.unique(y_test))
     fpr, tpr, _ = roc_curve(y_test_bin.ravel(), y_proba.ravel())
     roc_auc = auc(fpr, tpr)
@@ -85,6 +113,7 @@ def evaluate_and_plot(model, X_test, y_test, le_target, features, df):
     plt.tight_layout()
     save_plot(plt, 'roc_curve_macro.png', model_vis_folder)
     plt.show()
+    
     precision, recall, _ = precision_recall_curve(y_test_bin.ravel(), y_proba.ravel())
     pr_auc = average_precision_score(y_test_bin, y_proba, average="macro")
     plt.figure(figsize=(8, 6))
@@ -255,30 +284,6 @@ def visualize_one_decision_tree(model, feature_names, class_names, output_folder
     save_plot(plt, f'decision_tree_{tree_index + 1}.png', output_folder)
     plt.show()
 
-def create_example_decision_tree(output_path):
-    dot = Digraph(comment='Example Decision Tree', format='png')
-    dot.attr(size='8,6')
-    dot.node('A', 'Field of Study?\n(Engineering/Other)')
-    dot.node('B', 'GPA > 3.5?')
-    dot.node('C', 'Soft Skills > 6?')
-    dot.node('D', 'Career: Engineer')
-    dot.node('E', 'Career: Data Scientist')
-    dot.node('F', 'Career: Business Analyst')
-    dot.node('G', 'Career: Designer')
-
-    dot.edge('A', 'B', label='Engineering')
-    dot.edge('A', 'C', label='Other')
-    dot.edge('B', 'D', label='Yes')
-    dot.edge('B', 'E', label='No')
-    dot.edge('C', 'F', label='Yes')
-    dot.edge('C', 'G', label='No')
-
-    dot.render(output_path, view=False)
-    print(f"Example decision tree saved to {output_path}.png")
-
-# Usage example:
-# create_example_decision_tree('/Users/dikshanta/Documents/FuturePathFinder/model/model_visualizations/example_decision_tree')
-
 def main():
     data_path = "/Users/dikshanta/Documents/FuturePathFinder/data/datasets/cleaned_data.csv"
     df, le_field, le_target = load_and_prepare_data(data_path)
@@ -312,7 +317,6 @@ def main():
         plot_decision_boundaries(model, X_test_scaled, y_test, features, le_target, model_vis_folder)
     plot_bar_pie_charts(df, 'Professional_Career', model_vis_folder)
     interactive_prediction(model, le_field, le_target)
-    create_example_decision_tree(os.path.join(model_vis_folder, 'example_decision_tree'))
-
+    
 if __name__ == "__main__":
     main()
