@@ -17,6 +17,7 @@ from sklearn.inspection import DecisionBoundaryDisplay
 from sklearn.tree import plot_tree
 import joblib
 
+#DATA LOADING & ENCODING
 def load_and_prepare_data(filepath):
     df = pd.read_csv(filepath)
     df['Field_of_Study'] = df['Field_of_Study'].astype(str).str.strip()
@@ -27,6 +28,7 @@ def load_and_prepare_data(filepath):
     df['Professional_Career_enc'] = le_target.fit_transform(df['Professional_Career'])
     return df, le_field, le_target
 
+#  FEATURE SCALING
 def scale_features(X_train, X_test, numeric_features):
     scaler = StandardScaler()
     X_train_scaled = X_train.copy()
@@ -35,6 +37,7 @@ def scale_features(X_train, X_test, numeric_features):
     X_test_scaled[numeric_features] = scaler.transform(X_test[numeric_features])
     return X_train_scaled, X_test_scaled, scaler
 
+# CROSS-VALIDATION PHASE
 def perform_cross_validation(model, X_train, y_train, cv_splits=5):
     cv = StratifiedKFold(n_splits=cv_splits, shuffle=True, random_state=42)
     cv_scores = cross_val_score(model, X_train, y_train, cv=cv, scoring='accuracy')
@@ -47,6 +50,7 @@ def save_plot(plt, filename, folder_path):
     plt.savefig(full_path, bbox_inches='tight')
     print(f"Saved {filename} successfully.")
 
+# TESTING PHASE
 def evaluate_and_plot(model, X_test, y_test, le_target, features, df):
     model_vis_folder = os.path.join(os.path.dirname(__file__), 'model_visualizations')
     os.makedirs(model_vis_folder, exist_ok=True)
@@ -173,6 +177,8 @@ def evaluate_and_plot(model, X_test, y_test, le_target, features, df):
     except Exception as e:
         print(f"t-SNE visualization failed: {e}")
 
+#INTERACTIVE INPUT PREDICTION
+
 def interactive_prediction(model, le_field, le_target):
     print("\n=== Career Prediction from Input ===")
     unique_fields = sorted(le_field.classes_)
@@ -284,6 +290,8 @@ def visualize_one_decision_tree(model, feature_names, class_names, output_folder
     save_plot(plt, f'decision_tree_{tree_index + 1}.png', output_folder)
     plt.show()
 
+#MODEL TRAINING AND TESTING PIPELINE
+
 def main():
     data_path = "/Users/dikshanta/Documents/FuturePathFinder/data/datasets/cleaned_data.csv"
     df, le_field, le_target = load_and_prepare_data(data_path)
@@ -292,11 +300,14 @@ def main():
     target = 'Professional_Career_enc'
     X = df[features]
     y = df[target]
+     # Feature-Target Split
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, stratify=y, test_size=0.2, random_state=42)
+     # Scaling
     numeric_features = ['University_GPA', 'Internships_Completed',
                         'Projects_Completed', 'Certifications', 'Soft_Skills_Score']
     X_train_scaled, X_test_scaled, scaler = scale_features(X_train, X_test, numeric_features)
+      # Model Initialization
     model = RandomForestClassifier(random_state=42)
     print("Performing 5-fold Stratified Cross-validation...")
     cv_scores = perform_cross_validation(model, X_train_scaled, y_train, cv_splits=5)
