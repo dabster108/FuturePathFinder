@@ -219,3 +219,6 @@ async def recommend(req: RecommendRequest):
         import traceback
         traceback.print_exc() # Print full traceback to server console
         return JSONResponse(status_code=500, content={"error": f"An unexpected error occurred on the server. Please try again. Technical details: {type(e).__name__} - {str(e)}"})
+    
+
+#uvicorn main:app --reload
